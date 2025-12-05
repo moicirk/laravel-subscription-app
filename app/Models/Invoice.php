@@ -6,30 +6,6 @@ use App\Enums\InvoiceStatusEnum;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
-/**
- * @property int $id
- * @property int $user_id
- * @property int|null $subscription_id
- * @property InvoiceStatusEnum $status
- * @property numeric $price
- * @property numeric $tax
- * @property \Illuminate\Support\Carbon|null $created_at
- * @property \Illuminate\Support\Carbon|null $updated_at
- * @property-read \App\Models\Subscription|null $subscription
- * @property-read \App\Models\User $user
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Invoice newModelQuery()
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Invoice newQuery()
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Invoice query()
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Invoice whereCreatedAt($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Invoice whereId($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Invoice wherePrice($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Invoice whereStatus($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Invoice whereSubscriptionId($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Invoice whereTax($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Invoice whereUpdatedAt($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Invoice whereUserId($value)
- * @mixin \Eloquent
- */
 class Invoice extends Model
 {
     protected $fillable = [
