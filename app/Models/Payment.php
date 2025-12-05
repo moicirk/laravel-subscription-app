@@ -13,7 +13,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
  * @property-read \App\Models\Invoice $invoice
- * @property-read \App\Models\UserPaymentMethods $userPaymentMethod
+ * @property-read \App\Models\UserPaymentMethod $userPaymentMethod
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Payment newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Payment newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Payment query()
@@ -47,6 +47,6 @@ class Payment extends Model
 
     public function userPaymentMethod(): BelongsTo
     {
-        return $this->belongsTo(UserPaymentMethods::class);
+        return $this->belongsTo(UserPaymentMethod::class);
     }
 }

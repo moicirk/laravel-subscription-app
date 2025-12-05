@@ -26,6 +26,7 @@ class SubscriptionService implements SubscriptionServiceInterface
      * @param Plan $plan The plan to subscribe to
      * @param PromoCode|null $promoCode Optional promo code to apply discount
      * @return Subscription The created subscription instance
+     * @throws \Throwable
      */
     public function subscribe(User $tenant, Plan $plan, ?PromoCode $promoCode = null): Subscription
     {
@@ -64,6 +65,7 @@ class SubscriptionService implements SubscriptionServiceInterface
      * @param Subscription $subscription The subscription to upgrade
      * @param Plan $newPlan The new plan to upgrade to
      * @return void
+     * @throws \Throwable
      */
     public function upgrade(Subscription $subscription, Plan $newPlan): void
     {
@@ -99,6 +101,7 @@ class SubscriptionService implements SubscriptionServiceInterface
      * @param Subscription $subscription The subscription to downgrade
      * @param Plan $newPlan The new plan to downgrade to
      * @return void
+     * @throws \Throwable
      */
     public function downgrade(Subscription $subscription, Plan $newPlan): void
     {
@@ -121,6 +124,7 @@ class SubscriptionService implements SubscriptionServiceInterface
      * @param Subscription $subscription The subscription to cancel
      * @param string $reason The reason for cancellation (currently unused)
      * @return void
+     * @throws \Throwable
      */
     public function cancel(Subscription $subscription, string $reason): void
     {
@@ -143,6 +147,7 @@ class SubscriptionService implements SubscriptionServiceInterface
      *
      * @param Subscription $subscription The subscription to renew
      * @return void
+     * @throws \Throwable
      */
     public function renew(Subscription $subscription): void
     {

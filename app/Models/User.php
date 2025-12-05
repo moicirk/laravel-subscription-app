@@ -14,6 +14,7 @@ use Illuminate\Notifications\Notifiable;
  * @property \Illuminate\Support\Carbon|null $email_verified_at
  * @property string $password
  * @property string|null $remember_token
+ * @property string|null $stripe_customer_id
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
  * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Invoice> $invoices
@@ -50,6 +51,7 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
+        'stripe_customer_id'
     ];
 
     /**
@@ -83,5 +85,10 @@ class User extends Authenticatable
     public function invoices(): HasMany
     {
         return $this->hasMany(Invoice::class);
+    }
+
+    public function userPaymentMethods(): HasMany
+    {
+        return $this->hasMany(UserPaymentMethod::class);
     }
 }
