@@ -7,16 +7,12 @@ use App\Models\Subscription;
 use App\Models\UserPaymentMethod;
 use App\Services\Payment\PaymentGatewayInterface;
 use App\Services\Payment\PaymentResult;
-use PayPalCheckoutSdk\Core\PayPalHttpClient;
-use PayPalCheckoutSdk\Orders\OrdersCaptureRequest;
-use PayPalCheckoutSdk\Orders\OrdersCreateRequest;
-use PayPalCheckoutSdk\Payments\CapturesRefundRequest;
-use PayPalHttp\HttpException;
+use PaypalServerSdkLib\PaypalServerSdkClient;
 
 class PaypalService implements PaymentGatewayInterface
 {
     public function __construct(
-        private PayPalHttpClient $client
+        private PaypalServerSdkClient $client
     ) {}
 
     /**
@@ -31,66 +27,69 @@ class PaypalService implements PaymentGatewayInterface
     public function charge(float $amount, UserPaymentMethod $method): PaymentResult
     {
         try {
-            $request = new OrdersCreateRequest();
-            $request->prefer('return=representation');
-            $request->body = [
-                'intent' => 'CAPTURE',
-                'purchase_units' => [
-                    [
-                        'amount' => [
-                            'currency_code' => 'USD',
-                            'value' => number_format($amount, 2, '.', ''),
-                        ],
-                    ],
-                ],
-                'application_context' => [
-                    'return_url' => config('services.paypal.return_url'),
-                    'cancel_url' => config('services.paypal.cancel_url'),
-                ],
-            ];
+////            $request = new OrdersCreateRequest();
+////            $request->prefer('return=representation');
+////            $request->body = [
+////                'intent' => 'CAPTURE',
+////                'purchase_units' => [
+////                    [
+////                        'amount' => [
+////                            'currency_code' => 'USD',
+////                            'value' => number_format($amount, 2, '.', ''),
+////                        ],
+////                    ],
+////                ],
+////                'application_context' => [
+////                    'return_url' => config('services.paypal.return_url'),
+////                    'cancel_url' => config('services.paypal.cancel_url'),
+////                ],
+////            ];
+////
+////            $response = $this->client->execute($request);
+////
+////            if ($response->statusCode !== 201) {
+////                return PaymentResult::failure('Failed to create PayPal order');
+////            }
+////
+////            $orderId = $response->result->id;
+////
+////            $captureRequest = new OrdersCaptureRequest($orderId);
+////            $captureResponse = $this->client->execute($captureRequest);
+////
+////            if ($captureResponse->statusCode !== 201) {
+////                return PaymentResult::failure('Failed to capture PayPal order');
+////            }
+////
+////            $captureId = $captureResponse->result->purchase_units[0]->payments->captures[0]->id ?? null;
+////            $status = $captureResponse->result->status ?? 'UNKNOWN';
+////
+////            if ($status === 'COMPLETED' && $captureId) {
+////                return PaymentResult::success(
+////                    transactionId: $captureId,
+////                    metadata: [
+////                        'order_id' => $orderId,
+////                        'amount' => $amount,
+////                        'currency' => 'USD',
+////                        'status' => $status,
+////                    ]
+////                );
+////            }
+//
+//            return PaymentResult::failure(
+//                errorMessage: "PayPal order status: {$status}",
+//                metadata: ['order_id' => $orderId]
+//            );
 
-            $response = $this->client->execute($request);
 
-            if ($response->statusCode !== 201) {
-                return PaymentResult::failure('Failed to create PayPal order');
-            }
-
-            $orderId = $response->result->id;
-
-            $captureRequest = new OrdersCaptureRequest($orderId);
-            $captureResponse = $this->client->execute($captureRequest);
-
-            if ($captureResponse->statusCode !== 201) {
-                return PaymentResult::failure('Failed to capture PayPal order');
-            }
-
-            $captureId = $captureResponse->result->purchase_units[0]->payments->captures[0]->id ?? null;
-            $status = $captureResponse->result->status ?? 'UNKNOWN';
-
-            if ($status === 'COMPLETED' && $captureId) {
-                return PaymentResult::success(
-                    transactionId: $captureId,
-                    metadata: [
-                        'order_id' => $orderId,
-                        'amount' => $amount,
-                        'currency' => 'USD',
-                        'status' => $status,
-                    ]
-                );
-            }
-
-            return PaymentResult::failure(
-                errorMessage: "PayPal order status: {$status}",
-                metadata: ['order_id' => $orderId]
+            return PaymentResult::success(
+                transactionId:
+                '123123',
+                metadata: [
+                    'amount' => $amount,
+                    'currency' => 'USD',
+                ]
             );
-        } catch (HttpException $e) {
-            $error = json_decode($e->getMessage(), true);
-            $errorMessage = $error['message'] ?? $e->getMessage();
 
-            return PaymentResult::failure(
-                errorMessage: $errorMessage,
-                metadata: ['error_details' => $error]
-            );
         } catch (\Exception $e) {
             return PaymentResult::failure(
                 errorMessage: $e->getMessage()

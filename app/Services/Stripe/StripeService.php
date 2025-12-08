@@ -8,7 +8,6 @@ use App\Models\User;
 use App\Models\UserPaymentMethod;
 use App\Services\Payment\PaymentGatewayInterface;
 use App\Services\Payment\PaymentResult;
-use Illuminate\Support\Facades\Log;
 use Stripe\Exception\ApiErrorException;
 use Stripe\StripeClient;
 
