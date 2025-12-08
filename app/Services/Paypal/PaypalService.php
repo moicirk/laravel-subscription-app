@@ -262,37 +262,4 @@ class PaypalService implements PaymentGatewayInterface
 
         return $paypalPlanId;
     }
-
-    /**
-     * Verify a PayPal webhook signature.
-     *
-     * Validates that a webhook request actually came from PayPal.
-     *
-     * @param string $webhookId The PayPal webhook ID
-     * @param array $headers The request headers
-     * @param string $body The raw request body
-     * @return bool True if the signature is valid
-     */
-    public function verifyWebhookSignature(string $webhookId, array $headers, string $body): bool
-    {
-        try {
-            $request = new \PayPalHttp\HttpRequest('/v1/notifications/verify-webhook-signature', 'POST');
-            $request->headers = ['Content-Type' => 'application/json'];
-            $request->body = [
-                'auth_algo' => $headers['PAYPAL-AUTH-ALGO'] ?? '',
-                'cert_url' => $headers['PAYPAL-CERT-URL'] ?? '',
-                'transmission_id' => $headers['PAYPAL-TRANSMISSION-ID'] ?? '',
-                'transmission_sig' => $headers['PAYPAL-TRANSMISSION-SIG'] ?? '',
-                'transmission_time' => $headers['PAYPAL-TRANSMISSION-TIME'] ?? '',
-                'webhook_id' => $webhookId,
-                'webhook_event' => json_decode($body, true),
-            ];
-
-            $response = $this->client->execute($request);
-
-            return ($response->result->verification_status ?? '') === 'SUCCESS';
-        } catch (\Exception $e) {
-            return false;
-        }
-    }
 }
