@@ -34,7 +34,7 @@ class TaskController extends Controller
     {
         $validated = $request->validate([
             'title' => 'required|max:255',
-            'description' => 'nullable'
+            'description' => 'nullable',
         ]);
 
         Task::created($validated);
@@ -66,7 +66,7 @@ class TaskController extends Controller
     public function update(Request $request, Task $task): RedirectResponse
     {
         $task->update([
-            'completed' => $request->has('completed')
+            'completed' => $request->has('completed'),
         ]);
 
         return redirect()->route('tasks.index');

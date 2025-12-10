@@ -22,10 +22,11 @@ class SubscriptionService implements SubscriptionServiceInterface
      * Creates a subscription record, calculates pricing with optional promo code,
      * and generates a pending invoice for the subscription period.
      *
-     * @param User $tenant The user who is subscribing
-     * @param Plan $plan The plan to subscribe to
-     * @param PromoCode|null $promoCode Optional promo code to apply discount
+     * @param  User  $tenant  The user who is subscribing
+     * @param  Plan  $plan  The plan to subscribe to
+     * @param  PromoCode|null  $promoCode  Optional promo code to apply discount
      * @return Subscription The created subscription instance
+     *
      * @throws \Throwable
      */
     public function subscribe(User $tenant, Plan $plan, ?PromoCode $promoCode = null): Subscription
@@ -62,9 +63,9 @@ class SubscriptionService implements SubscriptionServiceInterface
      * Updates the subscription to the new plan, calculates prorated charges
      * for the remaining period, and creates an invoice for the difference if positive.
      *
-     * @param Subscription $subscription The subscription to upgrade
-     * @param Plan $newPlan The new plan to upgrade to
-     * @return void
+     * @param  Subscription  $subscription  The subscription to upgrade
+     * @param  Plan  $newPlan  The new plan to upgrade to
+     *
      * @throws \Throwable
      */
     public function upgrade(Subscription $subscription, Plan $newPlan): void
@@ -98,9 +99,9 @@ class SubscriptionService implements SubscriptionServiceInterface
      * Updates the subscription to the new plan and recalculates the end date
      * based on the new plan type. No refund is issued for unused time.
      *
-     * @param Subscription $subscription The subscription to downgrade
-     * @param Plan $newPlan The new plan to downgrade to
-     * @return void
+     * @param  Subscription  $subscription  The subscription to downgrade
+     * @param  Plan  $newPlan  The new plan to downgrade to
+     *
      * @throws \Throwable
      */
     public function downgrade(Subscription $subscription, Plan $newPlan): void
@@ -121,9 +122,9 @@ class SubscriptionService implements SubscriptionServiceInterface
      * Sets the subscription end date to the current time and cancels
      * all pending invoices associated with the subscription.
      *
-     * @param Subscription $subscription The subscription to cancel
-     * @param string $reason The reason for cancellation (currently unused)
-     * @return void
+     * @param  Subscription  $subscription  The subscription to cancel
+     * @param  string  $reason  The reason for cancellation (currently unused)
+     *
      * @throws \Throwable
      */
     public function cancel(Subscription $subscription, string $reason): void
@@ -145,8 +146,8 @@ class SubscriptionService implements SubscriptionServiceInterface
      * Extends the subscription from its current end date for another period
      * based on the plan type, and creates a new pending invoice for the renewal.
      *
-     * @param Subscription $subscription The subscription to renew
-     * @return void
+     * @param  Subscription  $subscription  The subscription to renew
+     *
      * @throws \Throwable
      */
     public function renew(Subscription $subscription): void
@@ -179,8 +180,8 @@ class SubscriptionService implements SubscriptionServiceInterface
      * for the remaining days in the current billing period. Returns the amount
      * to charge (or 0 if the new plan is cheaper).
      *
-     * @param Subscription $subscription The current subscription
-     * @param Plan $newPlan The plan to switch to
+     * @param  Subscription  $subscription  The current subscription
+     * @param  Plan  $newPlan  The plan to switch to
      * @return float The prorated amount to charge (0 or positive)
      */
     public function calculateProration(Subscription $subscription, Plan $newPlan): float
@@ -209,8 +210,8 @@ class SubscriptionService implements SubscriptionServiceInterface
      * Verifies if the user has an active subscription and if that subscription's
      * plan includes the specified feature.
      *
-     * @param User $tenant The user to check access for
-     * @param PlanFeature $feature The feature to verify access to
+     * @param  User  $tenant  The user to check access for
+     * @param  PlanFeature  $feature  The feature to verify access to
      * @return bool True if the user has access to the feature, false otherwise
      */
     public function checkUsageLimit(User $tenant, PlanFeature $feature): bool
@@ -220,7 +221,7 @@ class SubscriptionService implements SubscriptionServiceInterface
             ->latest()
             ->first();
 
-        if (!$subscription) {
+        if (! $subscription) {
             return false;
         }
 
@@ -235,8 +236,8 @@ class SubscriptionService implements SubscriptionServiceInterface
      * Adds the appropriate time period (day, month, or year) to the start date
      * based on the plan's billing cycle type.
      *
-     * @param Carbon $startDate The subscription start date
-     * @param PlanTypeEnum $type The plan billing cycle type (daily, monthly, yearly)
+     * @param  Carbon  $startDate  The subscription start date
+     * @param  PlanTypeEnum  $type  The plan billing cycle type (daily, monthly, yearly)
      * @return Carbon The calculated end date
      */
     protected function calculateEndDate(Carbon $startDate, PlanTypeEnum $type): Carbon
@@ -254,15 +255,15 @@ class SubscriptionService implements SubscriptionServiceInterface
      * Applies promo code discounts (fixed amount or percentage) to the plan price.
      * Ensures the final price is never negative.
      *
-     * @param Plan $plan The plan to calculate price for
-     * @param PromoCode|null $promoCode Optional promo code to apply
+     * @param  Plan  $plan  The plan to calculate price for
+     * @param  PromoCode|null  $promoCode  Optional promo code to apply
      * @return float The final calculated price after discounts
      */
     protected function calculatePrice(Plan $plan, ?PromoCode $promoCode): float
     {
         $price = (float) $plan->price;
 
-        if (!$promoCode) {
+        if (! $promoCode) {
             return $price;
         }
 
@@ -277,7 +278,7 @@ class SubscriptionService implements SubscriptionServiceInterface
      *
      * Applies a 24% tax rate to the provided price.
      *
-     * @param float $price The price to calculate tax for
+     * @param  float  $price  The price to calculate tax for
      * @return float The calculated tax amount
      */
     protected function calculateTax(float $price): float
@@ -291,7 +292,7 @@ class SubscriptionService implements SubscriptionServiceInterface
      * Converts the plan price to a daily rate for proration calculations.
      * Uses 30 days for monthly plans and 365 days for yearly plans.
      *
-     * @param Plan $plan The plan to calculate daily rate for
+     * @param  Plan  $plan  The plan to calculate daily rate for
      * @return float The daily rate for the plan
      */
     protected function getDailyRate(Plan $plan): float

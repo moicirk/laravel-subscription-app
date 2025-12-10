@@ -5,7 +5,7 @@ namespace App\Http\Resources;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
-class UserResource extends JsonResource
+class SubscriptionResource extends JsonResource
 {
     /**
      * Transform the resource into an array.
@@ -16,10 +16,12 @@ class UserResource extends JsonResource
     {
         return [
             'id' => $this->id,
-            'name' => $this->name,
-            'email' => $this->email,
+            'start_date' => $this->start_date,
+            'end_date' => $this->end_date,
             'created_at' => $this->created_at,
             'updated_at' => $this->updated_at,
+            'plan' => new PlanResource($this->plan),
+            'promo_code' => new PromoCodeResource($this->promoCode),
         ];
     }
 }

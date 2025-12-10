@@ -20,70 +20,68 @@ class PaypalService implements PaymentGatewayInterface
      *
      * Creates a PayPal order with the specified amount and captures it immediately.
      *
-     * @param float $amount The amount to charge
-     * @param UserPaymentMethods $method The payment method to use
+     * @param  float  $amount  The amount to charge
+     * @param  UserPaymentMethods  $method  The payment method to use
      * @return PaymentResult The result of the charge operation
      */
     public function charge(float $amount, UserPaymentMethod $method): PaymentResult
     {
         try {
-////            $request = new OrdersCreateRequest();
-////            $request->prefer('return=representation');
-////            $request->body = [
-////                'intent' => 'CAPTURE',
-////                'purchase_units' => [
-////                    [
-////                        'amount' => [
-////                            'currency_code' => 'USD',
-////                            'value' => number_format($amount, 2, '.', ''),
-////                        ],
-////                    ],
-////                ],
-////                'application_context' => [
-////                    'return_url' => config('services.paypal.return_url'),
-////                    'cancel_url' => config('services.paypal.cancel_url'),
-////                ],
-////            ];
-////
-////            $response = $this->client->execute($request);
-////
-////            if ($response->statusCode !== 201) {
-////                return PaymentResult::failure('Failed to create PayPal order');
-////            }
-////
-////            $orderId = $response->result->id;
-////
-////            $captureRequest = new OrdersCaptureRequest($orderId);
-////            $captureResponse = $this->client->execute($captureRequest);
-////
-////            if ($captureResponse->statusCode !== 201) {
-////                return PaymentResult::failure('Failed to capture PayPal order');
-////            }
-////
-////            $captureId = $captureResponse->result->purchase_units[0]->payments->captures[0]->id ?? null;
-////            $status = $captureResponse->result->status ?? 'UNKNOWN';
-////
-////            if ($status === 'COMPLETED' && $captureId) {
-////                return PaymentResult::success(
-////                    transactionId: $captureId,
-////                    metadata: [
-////                        'order_id' => $orderId,
-////                        'amount' => $amount,
-////                        'currency' => 'USD',
-////                        'status' => $status,
-////                    ]
-////                );
-////            }
-//
-//            return PaymentResult::failure(
-//                errorMessage: "PayPal order status: {$status}",
-//                metadata: ['order_id' => $orderId]
-//            );
-
+            // //            $request = new OrdersCreateRequest();
+            // //            $request->prefer('return=representation');
+            // //            $request->body = [
+            // //                'intent' => 'CAPTURE',
+            // //                'purchase_units' => [
+            // //                    [
+            // //                        'amount' => [
+            // //                            'currency_code' => 'USD',
+            // //                            'value' => number_format($amount, 2, '.', ''),
+            // //                        ],
+            // //                    ],
+            // //                ],
+            // //                'application_context' => [
+            // //                    'return_url' => config('services.paypal.return_url'),
+            // //                    'cancel_url' => config('services.paypal.cancel_url'),
+            // //                ],
+            // //            ];
+            // //
+            // //            $response = $this->client->execute($request);
+            // //
+            // //            if ($response->statusCode !== 201) {
+            // //                return PaymentResult::failure('Failed to create PayPal order');
+            // //            }
+            // //
+            // //            $orderId = $response->result->id;
+            // //
+            // //            $captureRequest = new OrdersCaptureRequest($orderId);
+            // //            $captureResponse = $this->client->execute($captureRequest);
+            // //
+            // //            if ($captureResponse->statusCode !== 201) {
+            // //                return PaymentResult::failure('Failed to capture PayPal order');
+            // //            }
+            // //
+            // //            $captureId = $captureResponse->result->purchase_units[0]->payments->captures[0]->id ?? null;
+            // //            $status = $captureResponse->result->status ?? 'UNKNOWN';
+            // //
+            // //            if ($status === 'COMPLETED' && $captureId) {
+            // //                return PaymentResult::success(
+            // //                    transactionId: $captureId,
+            // //                    metadata: [
+            // //                        'order_id' => $orderId,
+            // //                        'amount' => $amount,
+            // //                        'currency' => 'USD',
+            // //                        'status' => $status,
+            // //                    ]
+            // //                );
+            // //            }
+            //
+            //            return PaymentResult::failure(
+            //                errorMessage: "PayPal order status: {$status}",
+            //                metadata: ['order_id' => $orderId]
+            //            );
 
             return PaymentResult::success(
-                transactionId:
-                '123123',
+                transactionId: '123123',
                 metadata: [
                     'amount' => $amount,
                     'currency' => 'USD',
@@ -103,8 +101,8 @@ class PaypalService implements PaymentGatewayInterface
      * Creates a refund for the specified captured payment.
      * Supports both full and partial refunds.
      *
-     * @param Payment $payment The payment to refund
-     * @param float $amount The amount to refund
+     * @param  Payment  $payment  The payment to refund
+     * @param  float  $amount  The amount to refund
      * @return PaymentResult The result of the refund operation
      */
     public function refund(Payment $payment, float $amount): PaymentResult
@@ -165,8 +163,9 @@ class PaypalService implements PaymentGatewayInterface
      * Creates a PayPal subscription using the PayPal Billing API.
      * Requires a PayPal plan ID to be configured in the plan model.
      *
-     * @param Subscription $subscription The subscription to create in PayPal
+     * @param  Subscription  $subscription  The subscription to create in PayPal
      * @return string The PayPal subscription ID
+     *
      * @throws \Exception If subscription creation fails
      */
     public function createSubscription(Subscription $subscription): string
@@ -215,8 +214,8 @@ class PaypalService implements PaymentGatewayInterface
      *
      * Cancels the PayPal subscription immediately.
      *
-     * @param string $externalId The PayPal subscription ID
-     * @return void
+     * @param  string  $externalId  The PayPal subscription ID
+     *
      * @throws \Exception If cancellation fails
      */
     public function cancelSubscription(string $externalId): void
@@ -248,15 +247,16 @@ class PaypalService implements PaymentGatewayInterface
      * Retrieves the PayPal plan ID from the plan model.
      * In production, this should be stored in the database.
      *
-     * @param \App\Models\Plan $plan The plan to get PayPal plan ID for
+     * @param  \App\Models\Plan  $plan  The plan to get PayPal plan ID for
      * @return string The PayPal plan ID
+     *
      * @throws \Exception If plan ID is not configured
      */
     protected function getPayPalPlanId(\App\Models\Plan $plan): string
     {
         $paypalPlanId = $plan->paypal_plan_id ?? null;
 
-        if (!$paypalPlanId) {
+        if (! $paypalPlanId) {
             throw new \Exception("PayPal plan ID not configured for plan {$plan->id}");
         }
 

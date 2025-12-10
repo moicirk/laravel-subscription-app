@@ -13,7 +13,7 @@ class Invoice extends Model
         'subscription_id',
         'status',
         'price',
-        'tax'
+        'tax',
     ];
 
     protected function casts(): array
@@ -21,7 +21,7 @@ class Invoice extends Model
         return [
             'status' => InvoiceStatusEnum::class,
             'price' => 'decimal:2',
-            'tax' => 'decimal:2'
+            'tax' => 'decimal:2',
         ];
     }
 

@@ -13,14 +13,14 @@ class Plan extends Model
         'description',
         'position',
         'type',
-        'price'
+        'price',
     ];
 
     protected function casts(): array
     {
         return [
             'type' => PlanTypeEnum::class,
-            'price' => 'decimal:2'
+            'price' => 'decimal:2',
         ];
     }
 

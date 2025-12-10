@@ -16,9 +16,6 @@ readonly class PaymentService
     ) {}
 
     /**
-     * @param User $user
-     * @param UserPaymentMethodTypeEnum $type
-     * @return void
      * @throws \Exception
      */
     public function createCustomer(User $user, UserPaymentMethodTypeEnum $type): void
@@ -30,9 +27,6 @@ readonly class PaymentService
     }
 
     /**
-     * @param Invoice $invoice
-     * @param UserPaymentMethod $method
-     * @return PaymentResult
      * @throws \Exception
      */
     public function charge(Invoice $invoice, UserPaymentMethod $method): PaymentResult
@@ -41,7 +35,7 @@ readonly class PaymentService
             throw new \Exception('Invoice status is not pending');
         }
 
-        return match($method->type) {
+        return match ($method->type) {
             UserPaymentMethodTypeEnum::STRIPE => $this->stripeService->charge(
                 $invoice->price + $invoice->tax,
                 $method

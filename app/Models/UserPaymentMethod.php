@@ -12,7 +12,7 @@ class UserPaymentMethod extends Model
         'user_id',
         'type',
         'details',
-        'is_default'
+        'is_default',
     ];
 
     protected function casts(): array
@@ -20,7 +20,7 @@ class UserPaymentMethod extends Model
         return [
             'type' => UserPaymentMethodTypeEnum::class,
             'is_default' => 'boolean',
-            'details' => 'array'
+            'details' => 'array',
         ];
     }
 

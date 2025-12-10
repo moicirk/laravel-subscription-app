@@ -18,8 +18,8 @@ class CheckSubscriptionActive implements ShouldQueue
     public function handle(SubscriptionService $subscriptionService): void
     {
         User::whereDoesntHave('subscriptions', function ($query) {
-                $query->where('end_date', '>', now());
-            })
+            $query->where('end_date', '>', now());
+        })
             ->whereNotNull('plan_id')
             ->where('auto_subscription', true)
             ->chunk(100, function ($users) use ($subscriptionService) {

@@ -20,7 +20,7 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->throttleApi();
     })
     ->withExceptions(function (Exceptions $exceptions) {
-        $customException = new CustomerExceptionHandle();
+        $customException = new CustomerExceptionHandle;
 
         $exceptions->report(function (Throwable $e) use ($customException) {
             $customException->report($e);

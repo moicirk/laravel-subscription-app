@@ -10,13 +10,13 @@ class Payment extends Model
     protected $fillable = [
         'invoice_id',
         'user_payment_method_id',
-        'amount'
+        'amount',
     ];
 
     protected function casts(): array
     {
         return [
-            'amount' => 'decimal:2'
+            'amount' => 'decimal:2',
         ];
     }
 

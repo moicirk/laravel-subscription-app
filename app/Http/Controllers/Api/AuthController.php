@@ -7,6 +7,7 @@ use App\Http\Resources\UserResource;
 use App\Models\User;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Http\Resources\Json\JsonResource;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\ValidationException;
 
@@ -17,13 +18,13 @@ class AuthController extends Controller
         $validated = $request->validate([
             'name' => 'required|string|max:255',
             'email' => 'required|string|email|max:255|unique:users',
-            'password' => 'required|string|min:8|confirmed'
+            'password' => 'required|string|min:8|confirmed',
         ]);
 
         $user = User::create([
             'name' => $validated['name'],
             'email' => $validated['email'],
-            'password' => Hash::make($validated['password'])
+            'password' => Hash::make($validated['password']),
         ]);
 
         $token = $user->createToken('auth-token')->plainTextToken;
@@ -32,7 +33,7 @@ class AuthController extends Controller
             'message' => 'User created successfully',
             'user' => $user,
             'token' => $token,
-            'type_token' => 'Bearer'
+            'type_token' => 'Bearer',
         ], 201);
     }
 
@@ -40,11 +41,11 @@ class AuthController extends Controller
     {
         $validated = $request->validate([
             'email' => 'required|email',
-            'password' => 'required'
+            'password' => 'required',
         ]);
 
         $user = User::where('email', $validated['email'])->first();
-        if (!$user || !Hash::check($validated['password'], $user->password)) {
+        if (! $user || ! Hash::check($validated['password'], $user->password)) {
             throw ValidationException::withMessages([
                 'email' => ['The provided credentials do not match our records.'],
             ]);
@@ -57,7 +58,7 @@ class AuthController extends Controller
             'message' => 'Login successful',
             'user' => $user,
             'token' => $token,
-            'type_token' => 'Bearer'
+            'type_token' => 'Bearer',
         ]);
     }
 
@@ -66,11 +67,11 @@ class AuthController extends Controller
         $request->user()->tokens()->delete();
 
         return response()->json([
-            'message' => 'Logout successful'
+            'message' => 'Logout successful',
         ]);
     }
 
-    public function user(Request $request): JsonResponse
+    public function user(Request $request): JsonResource
     {
         return new UserResource($request->user());
     }

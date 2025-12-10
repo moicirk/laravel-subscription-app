@@ -4,6 +4,7 @@ use Illuminate\Support\Facades\Route;
 
 Route::get('/info', function () {
     Log::info('Phpinfo page visited');
+
     return phpinfo();
 });
 

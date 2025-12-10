@@ -4,7 +4,6 @@ namespace App\Models;
 
 use App\Enums\PromoCodeTypeEnum;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class PromoCode extends Model
@@ -13,20 +12,15 @@ class PromoCode extends Model
         'user_id',
         'code',
         'type',
-        'value'
+        'value',
     ];
 
     protected function casts(): array
     {
         return [
             'type' => PromoCodeTypeEnum::class,
-            'value' => 'decimal:2'
+            'value' => 'decimal:2',
         ];
-    }
-
-    public function user(): BelongsTo
-    {
-        return $this->belongsTo(User::class);
     }
 
     public function subscriptions(): HasMany
