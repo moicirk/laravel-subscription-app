@@ -5,17 +5,22 @@ namespace App\Services\Subscription;
 use App\Enums\InvoiceStatusEnum;
 use App\Enums\PlanTypeEnum;
 use App\Enums\PromoCodeTypeEnum;
-use App\Models\Invoice;
 use App\Models\Plan;
 use App\Models\PlanFeature;
 use App\Models\PromoCode;
 use App\Models\Subscription;
 use App\Models\User;
+use App\Repositories\InvoiceRepository;
+use App\Repositories\SubscriptionRepository;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
 
 class SubscriptionService implements SubscriptionServiceInterface
 {
+    public function __construct(
+        private readonly SubscriptionRepository $subscriptionRepository,
+        private readonly InvoiceRepository $invoiceRepository
+    ) {}
     /**
      * Create a new subscription for a user with a given plan.
      *
@@ -35,7 +40,7 @@ class SubscriptionService implements SubscriptionServiceInterface
             $startDate = Carbon::now();
             $endDate = $this->calculateEndDate($startDate, $plan->type);
 
-            $subscription = Subscription::create([
+            $subscription = $this->subscriptionRepository->create([
                 'user_id' => $tenant->id,
                 'plan_id' => $plan->id,
                 'promo_code_id' => $promoCode?->id,
@@ -45,7 +50,7 @@ class SubscriptionService implements SubscriptionServiceInterface
 
             $price = $this->calculatePrice($plan, $promoCode);
 
-            Invoice::create([
+            $this->invoiceRepository->create([
                 'user_id' => $tenant->id,
                 'subscription_id' => $subscription->id,
                 'status' => InvoiceStatusEnum::PENDING,
@@ -76,13 +81,13 @@ class SubscriptionService implements SubscriptionServiceInterface
             $oldEndDate = $subscription->end_date;
             $newEndDate = $this->calculateEndDate(Carbon::now(), $newPlan->type);
 
-            $subscription->update([
+            $this->subscriptionRepository->update($subscription, [
                 'plan_id' => $newPlan->id,
                 'end_date' => $newEndDate,
             ]);
 
             if ($proration > 0) {
-                Invoice::create([
+                $this->invoiceRepository->create([
                     'user_id' => $subscription->user_id,
                     'subscription_id' => $subscription->id,
                     'status' => InvoiceStatusEnum::PENDING,
@@ -109,7 +114,7 @@ class SubscriptionService implements SubscriptionServiceInterface
         DB::transaction(function () use ($subscription, $newPlan) {
             $newEndDate = $this->calculateEndDate(Carbon::now(), $newPlan->type);
 
-            $subscription->update([
+            $this->subscriptionRepository->update($subscription, [
                 'plan_id' => $newPlan->id,
                 'end_date' => $newEndDate,
             ]);
@@ -130,13 +135,11 @@ class SubscriptionService implements SubscriptionServiceInterface
     public function cancel(Subscription $subscription, string $reason): void
     {
         DB::transaction(function () use ($subscription) {
-            $subscription->update([
+            $this->subscriptionRepository->update($subscription, [
                 'end_date' => Carbon::now(),
             ]);
 
-            Invoice::where('subscription_id', $subscription->id)
-                ->where('status', InvoiceStatusEnum::PENDING)
-                ->update(['status' => InvoiceStatusEnum::CANCELED]);
+            $this->invoiceRepository->cancelPendingForSubscription($subscription->id);
         });
     }
 
@@ -156,14 +159,14 @@ class SubscriptionService implements SubscriptionServiceInterface
             $newStartDate = $subscription->end_date;
             $newEndDate = $this->calculateEndDate($newStartDate, $subscription->plan->type);
 
-            $subscription->update([
+            $this->subscriptionRepository->update($subscription, [
                 'start_date' => $newStartDate,
                 'end_date' => $newEndDate,
             ]);
 
             $price = $this->calculatePrice($subscription->plan, $subscription->promoCode);
 
-            Invoice::create([
+            $this->invoiceRepository->create([
                 'user_id' => $subscription->user_id,
                 'subscription_id' => $subscription->id,
                 'status' => InvoiceStatusEnum::PENDING,
@@ -216,10 +219,7 @@ class SubscriptionService implements SubscriptionServiceInterface
      */
     public function checkUsageLimit(User $tenant, PlanFeature $feature): bool
     {
-        $subscription = Subscription::where('user_id', $tenant->id)
-            ->where('end_date', '>', Carbon::now())
-            ->latest()
-            ->first();
+        $subscription = $this->subscriptionRepository->getLatestActiveForUser($tenant->id);
 
         if (! $subscription) {
             return false;
