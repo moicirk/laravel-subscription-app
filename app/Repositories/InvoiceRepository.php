@@ -9,9 +9,6 @@ class InvoiceRepository
 {
     /**
      * Create a new invoice.
-     *
-     * @param array $data
-     * @return Invoice
      */
     public function create(array $data): Invoice
     {
@@ -21,7 +18,6 @@ class InvoiceRepository
     /**
      * Cancel all pending invoices for a subscription.
      *
-     * @param int $subscriptionId
      * @return int Number of invoices updated
      */
     public function cancelPendingForSubscription(int $subscriptionId): int

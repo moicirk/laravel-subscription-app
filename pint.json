@@ -1,0 +1,27 @@
+{
+    "preset": "laravel",
+    "rules": {
+        "no_superfluous_phpdoc_tags": {
+            "allow_mixed": true,
+            "remove_inheritdoc": false
+        },
+        "phpdoc_align": {
+            "align": "vertical",
+            "tags": [
+                "param",
+                "return",
+                "throws",
+                "type",
+                "var"
+            ]
+        },
+        "phpdoc_line_span": {
+            "const": "single",
+            "property": "single",
+            "method": "multi"
+        },
+        "phpdoc_separation": true,
+        "phpdoc_summary": true,
+        "phpdoc_trim": true
+    }
+}

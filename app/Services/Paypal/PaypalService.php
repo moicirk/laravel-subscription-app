@@ -20,8 +20,9 @@ class PaypalService implements PaymentGatewayInterface
      *
      * Creates a PayPal order with the specified amount and captures it immediately.
      *
-     * @param  float  $amount  The amount to charge
-     * @param  UserPaymentMethods  $method  The payment method to use
+     * @param float              $amount The amount to charge
+     * @param UserPaymentMethods $method The payment method to use
+     *
      * @return PaymentResult The result of the charge operation
      */
     public function charge(float $amount, UserPaymentMethod $method): PaymentResult
@@ -101,8 +102,9 @@ class PaypalService implements PaymentGatewayInterface
      * Creates a refund for the specified captured payment.
      * Supports both full and partial refunds.
      *
-     * @param  Payment  $payment  The payment to refund
-     * @param  float  $amount  The amount to refund
+     * @param Payment $payment The payment to refund
+     * @param float   $amount  The amount to refund
+     *
      * @return PaymentResult The result of the refund operation
      */
     public function refund(Payment $payment, float $amount): PaymentResult
@@ -163,7 +165,8 @@ class PaypalService implements PaymentGatewayInterface
      * Creates a PayPal subscription using the PayPal Billing API.
      * Requires a PayPal plan ID to be configured in the plan model.
      *
-     * @param  Subscription  $subscription  The subscription to create in PayPal
+     * @param Subscription $subscription The subscription to create in PayPal
+     *
      * @return string The PayPal subscription ID
      *
      * @throws \Exception If subscription creation fails
@@ -214,7 +217,7 @@ class PaypalService implements PaymentGatewayInterface
      *
      * Cancels the PayPal subscription immediately.
      *
-     * @param  string  $externalId  The PayPal subscription ID
+     * @param string $externalId The PayPal subscription ID
      *
      * @throws \Exception If cancellation fails
      */
@@ -247,7 +250,8 @@ class PaypalService implements PaymentGatewayInterface
      * Retrieves the PayPal plan ID from the plan model.
      * In production, this should be stored in the database.
      *
-     * @param  \App\Models\Plan  $plan  The plan to get PayPal plan ID for
+     * @param \App\Models\Plan $plan The plan to get PayPal plan ID for
+     *
      * @return string The PayPal plan ID
      *
      * @throws \Exception If plan ID is not configured

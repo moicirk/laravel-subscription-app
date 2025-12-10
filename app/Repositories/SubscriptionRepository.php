@@ -12,8 +12,6 @@ class SubscriptionRepository
     /**
      * Find a subscription by ID.
      *
-     * @param int $id
-     * @return Subscription
      * @throws ModelNotFoundException
      */
     public function find(int $id): Subscription
@@ -23,9 +21,6 @@ class SubscriptionRepository
 
     /**
      * Create a new subscription.
-     *
-     * @param array $data
-     * @return Subscription
      */
     public function create(array $data): Subscription
     {
@@ -34,10 +29,6 @@ class SubscriptionRepository
 
     /**
      * Update a subscription.
-     *
-     * @param Subscription $subscription
-     * @param array $data
-     * @return bool
      */
     public function update(Subscription $subscription, array $data): bool
     {
@@ -46,9 +37,6 @@ class SubscriptionRepository
 
     /**
      * Get subscriptions for the concrete user.
-     *
-     * @param User $user
-     * @return Collection
      */
     public function allForUser(User $user): Collection
     {
@@ -61,8 +49,6 @@ class SubscriptionRepository
     /**
      * Return current subscription for the user, if it exists.
      *
-     * @param User $user
-     * @return Subscription
      * @throws ModelNotFoundException
      */
     public function currentForUser(User $user): Subscription
@@ -76,9 +62,6 @@ class SubscriptionRepository
 
     /**
      * Get the latest active subscription for a user.
-     *
-     * @param int $userId
-     * @return Subscription|null
      */
     public function getLatestActiveForUser(int $userId): ?Subscription
     {

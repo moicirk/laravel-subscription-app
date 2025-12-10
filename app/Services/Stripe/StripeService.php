@@ -45,8 +45,9 @@ readonly class StripeService implements PaymentGatewayInterface
      * Creates a payment intent with the specified amount and payment method,
      * then confirms the payment automatically.
      *
-     * @param  float  $amount  The amount to charge in the base currency
-     * @param  UserPaymentMethod  $method  The payment method to use
+     * @param float             $amount The amount to charge in the base currency
+     * @param UserPaymentMethod $method The payment method to use
+     *
      * @return PaymentResult The result of the charge operation
      */
     public function charge(float $amount, UserPaymentMethod $method): PaymentResult
@@ -95,8 +96,9 @@ readonly class StripeService implements PaymentGatewayInterface
      * Creates a refund for the specified payment amount.
      * If the amount is less than the original payment, creates a partial refund.
      *
-     * @param  Payment  $payment  The payment to refund
-     * @param  float  $amount  The amount to refund
+     * @param Payment $payment The payment to refund
+     * @param float   $amount  The amount to refund
+     *
      * @return PaymentResult The result of the refund operation
      */
     public function refund(Payment $payment, float $amount): PaymentResult
@@ -143,7 +145,8 @@ readonly class StripeService implements PaymentGatewayInterface
      * Creates a Stripe subscription for the customer based on the plan
      * associated with the subscription model.
      *
-     * @param  Subscription  $subscription  The subscription to create in Stripe
+     * @param Subscription $subscription The subscription to create in Stripe
+     *
      * @return string The Stripe subscription ID
      *
      * @throws \Exception If subscription creation fails
@@ -175,7 +178,7 @@ readonly class StripeService implements PaymentGatewayInterface
      *
      * Cancels the Stripe subscription immediately.
      *
-     * @param  string  $externalId  The Stripe subscription ID
+     * @param string $externalId The Stripe subscription ID
      *
      * @throws \Exception If cancellation fails
      */
@@ -193,7 +196,8 @@ readonly class StripeService implements PaymentGatewayInterface
      *
      * Retrieves the Stripe customer ID from user metadata or creates a new customer.
      *
-     * @param  \App\Models\User  $user  The user to get/create customer for
+     * @param \App\Models\User $user The user to get/create customer for
+     *
      * @return string The Stripe customer ID
      *
      * @throws ApiErrorException
@@ -225,7 +229,8 @@ readonly class StripeService implements PaymentGatewayInterface
      * Retrieves the Stripe price ID from the plan metadata.
      * In production, this should be stored in the database.
      *
-     * @param  \App\Models\Plan  $plan  The plan to get price ID for
+     * @param \App\Models\Plan $plan The plan to get price ID for
+     *
      * @return string The Stripe price ID
      *
      * @throws \Exception If price ID is not configured

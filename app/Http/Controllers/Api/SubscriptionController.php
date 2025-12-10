@@ -6,7 +6,6 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\CancelSubscriptionRequest;
 use App\Http\Requests\SubscribeRequest;
 use App\Http\Resources\SubscriptionResource;
-use App\Models\Subscription;
 use App\Repositories\PlanRepository;
 use App\Repositories\PromoCodeRepository;
 use App\Repositories\SubscriptionRepository;
