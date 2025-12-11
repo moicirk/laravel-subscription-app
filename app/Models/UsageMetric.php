@@ -15,7 +15,7 @@ class UsageMetric extends Model
         'type',
         'resource',
         'details',
-        'created_at'
+        'created_at',
     ];
 
     protected function casts(): array
@@ -23,7 +23,7 @@ class UsageMetric extends Model
         return [
             'type' => UsageMetricTypeEnum::class,
             'details' => 'array',
-            'created_at' => 'datetime'
+            'created_at' => 'datetime',
         ];
     }
 

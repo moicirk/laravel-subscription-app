@@ -5,13 +5,11 @@ namespace App\Http\Controllers\Api;
 use App\Enums\UsageMetricTypeEnum;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\UserResource;
-use App\Models\User;
 use App\Repositories\UsageMetricRepository;
 use App\Repositories\UserRepository;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
-use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\ValidationException;
 
 class AuthController extends Controller
@@ -19,8 +17,7 @@ class AuthController extends Controller
     public function __construct(
         private readonly UserRepository $userRepository,
         private readonly UsageMetricRepository $usageMetricRepository
-    ) {
-    }
+    ) {}
 
     public function register(Request $request): JsonResponse
     {
@@ -54,7 +51,7 @@ class AuthController extends Controller
         ]);
 
         $user = $this->userRepository->findByEmail($validated['email']);
-        if (!$user || !$this->userRepository->checkPassword($user, $validated['password'])) {
+        if (! $user || ! $this->userRepository->checkPassword($user, $validated['password'])) {
             throw ValidationException::withMessages([
                 'email' => ['The provided credentials do not match our records.'],
             ]);

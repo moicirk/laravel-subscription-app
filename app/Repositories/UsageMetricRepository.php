@@ -20,7 +20,7 @@ class UsageMetricRepository
             'type' => $type,
             'resource' => $resource,
             'details' => $details,
-            'created_at' => now()
+            'created_at' => now(),
         ]);
     }
 }

@@ -36,18 +36,19 @@ class MakeServicePattern extends Command
         $path = app_path("Services/{$name}.php");
         if (File::exists($path)) {
             $this->warn("File {$name} already exists.");
+
             return;
         }
 
         $nameParts = explode('/', $name);
         $serviceName = array_pop($nameParts);
-        $namespacePart = empty($nameParts) ? '' : "\\" . implode('\\', $nameParts);
+        $namespacePart = empty($nameParts) ? '' : '\\'.implode('\\', $nameParts);
 
         $content = str_replace(
             ['{{namespace}}', '{{class}}'],
             [
                 "App\\Services{$namespacePart}",
-                $serviceName
+                $serviceName,
             ],
             $this->getStubContent()
         );
