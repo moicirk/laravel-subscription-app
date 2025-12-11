@@ -12,10 +12,6 @@ interface SubscriptionServiceInterface
 {
     public function subscribe(User $tenant, Plan $plan, ?PromoCode $promoCode = null): Subscription;
 
-    public function upgrade(Subscription $subscription, Plan $newPlan): void;
-
-    public function downgrade(Subscription $subscription, Plan $newPlan): void;
-
     public function cancel(Subscription $subscription, string $reason): void;
 
     public function renew(Subscription $subscription): void;

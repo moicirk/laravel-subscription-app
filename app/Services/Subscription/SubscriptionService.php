@@ -65,65 +65,6 @@ class SubscriptionService implements SubscriptionServiceInterface
     }
 
     /**
-     * Upgrade a subscription to a higher-tier plan.
-     *
-     * Updates the subscription to the new plan, calculates prorated charges
-     * for the remaining period, and creates an invoice for the difference if positive.
-     *
-     * @param Subscription $subscription The subscription to upgrade
-     * @param Plan         $newPlan      The new plan to upgrade to
-     *
-     * @throws \Throwable
-     */
-    public function upgrade(Subscription $subscription, Plan $newPlan): void
-    {
-        DB::transaction(function () use ($subscription, $newPlan) {
-            $proration = $this->calculateProration($subscription, $newPlan);
-
-            $oldEndDate = $subscription->end_date;
-            $newEndDate = $this->calculateEndDate(Carbon::now(), $newPlan->type);
-
-            $this->subscriptionRepository->update($subscription, [
-                'plan_id' => $newPlan->id,
-                'end_date' => $newEndDate,
-            ]);
-
-            if ($proration > 0) {
-                $this->invoiceRepository->create([
-                    'user_id' => $subscription->user_id,
-                    'subscription_id' => $subscription->id,
-                    'status' => InvoiceStatusEnum::PENDING,
-                    'price' => $proration,
-                    'tax' => $this->calculateTax($proration),
-                ]);
-            }
-        });
-    }
-
-    /**
-     * Downgrade a subscription to a lower-tier plan.
-     *
-     * Updates the subscription to the new plan and recalculates the end date
-     * based on the new plan type. No refund is issued for unused time.
-     *
-     * @param Subscription $subscription The subscription to downgrade
-     * @param Plan         $newPlan      The new plan to downgrade to
-     *
-     * @throws \Throwable
-     */
-    public function downgrade(Subscription $subscription, Plan $newPlan): void
-    {
-        DB::transaction(function () use ($subscription, $newPlan) {
-            $newEndDate = $this->calculateEndDate(Carbon::now(), $newPlan->type);
-
-            $this->subscriptionRepository->update($subscription, [
-                'plan_id' => $newPlan->id,
-                'end_date' => $newEndDate,
-            ]);
-        });
-    }
-
-    /**
      * Cancel an active subscription.
      *
      * Sets the subscription end date to the current time and cancels
@@ -224,7 +165,6 @@ class SubscriptionService implements SubscriptionServiceInterface
     public function checkUsageLimit(User $tenant, PlanFeature $feature): bool
     {
         $subscription = $this->subscriptionRepository->getLatestActiveForUser($tenant->id);
-
         if (! $subscription) {
             return false;
         }
