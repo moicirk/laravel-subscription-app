@@ -2,9 +2,12 @@
 
 namespace App\Http\Controllers\Api;
 
+use App\Enums\UsageMetricTypeEnum;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\UserResource;
 use App\Models\User;
+use App\Repositories\UsageMetricRepository;
+use App\Repositories\UserRepository;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
@@ -13,21 +16,27 @@ use Illuminate\Validation\ValidationException;
 
 class AuthController extends Controller
 {
+    public function __construct(
+        private readonly UserRepository $userRepository,
+        private readonly UsageMetricRepository $usageMetricRepository
+    ) {
+    }
+
     public function register(Request $request): JsonResponse
     {
         $validated = $request->validate([
             'name' => 'required|string|max:255',
             'email' => 'required|string|email|max:255|unique:users',
-            'password' => 'required|string|min:8|confirmed',
+            'password' => 'required|string|min:8',
         ]);
 
-        $user = User::create([
-            'name' => $validated['name'],
-            'email' => $validated['email'],
-            'password' => Hash::make($validated['password']),
-        ]);
-
+        $user = $this->userRepository->create(
+            $validated['name'],
+            $validated['email'],
+            $validated['password']
+        );
         $token = $user->createToken('auth-token')->plainTextToken;
+        $this->usageMetricRepository->create($user, UsageMetricTypeEnum::REGISTER);
 
         return response()->json([
             'message' => 'User created successfully',
@@ -44,8 +53,8 @@ class AuthController extends Controller
             'password' => 'required',
         ]);
 
-        $user = User::where('email', $validated['email'])->first();
-        if (! $user || ! Hash::check($validated['password'], $user->password)) {
+        $user = $this->userRepository->findByEmail($validated['email']);
+        if (!$user || !$this->userRepository->checkPassword($user, $validated['password'])) {
             throw ValidationException::withMessages([
                 'email' => ['The provided credentials do not match our records.'],
             ]);
@@ -53,6 +62,8 @@ class AuthController extends Controller
 
         $user->tokens()->delete();
         $token = $user->createToken('auth-token')->plainTextToken;
+
+        $this->usageMetricRepository->create($user, UsageMetricTypeEnum::LOGIN);
 
         return response()->json([
             'message' => 'Login successful',
@@ -65,6 +76,7 @@ class AuthController extends Controller
     public function logout(Request $request): JsonResponse
     {
         $request->user()->tokens()->delete();
+        $this->usageMetricRepository->create($request->user(), UsageMetricTypeEnum::LOGOUT);
 
         return response()->json([
             'message' => 'Logout successful',

@@ -5,6 +5,7 @@ namespace App\Services\Subscription;
 use App\Enums\InvoiceStatusEnum;
 use App\Enums\PlanTypeEnum;
 use App\Enums\PromoCodeTypeEnum;
+use App\Enums\UsageMetricTypeEnum;
 use App\Models\Plan;
 use App\Models\PlanFeature;
 use App\Models\PromoCode;
@@ -12,6 +13,7 @@ use App\Models\Subscription;
 use App\Models\User;
 use App\Repositories\InvoiceRepository;
 use App\Repositories\SubscriptionRepository;
+use App\Repositories\UsageMetricRepository;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
 
@@ -19,7 +21,8 @@ class SubscriptionService implements SubscriptionServiceInterface
 {
     public function __construct(
         private readonly SubscriptionRepository $subscriptionRepository,
-        private readonly InvoiceRepository $invoiceRepository
+        private readonly InvoiceRepository $invoiceRepository,
+        private readonly UsageMetricRepository $usageMetricRepository
     ) {}
 
     /**
@@ -60,6 +63,12 @@ class SubscriptionService implements SubscriptionServiceInterface
                 'tax' => $this->calculateTax($price),
             ]);
 
+            $this->usageMetricRepository->create(
+                $tenant,
+                UsageMetricTypeEnum::SUBSCRIBE,
+                details: ['subscription_id' => $subscription->id, 'plan_id' => $plan->id]
+            );
+
             return $subscription;
         });
     }
@@ -83,6 +92,12 @@ class SubscriptionService implements SubscriptionServiceInterface
             ]);
 
             $this->invoiceRepository->cancelPendingForSubscription($subscription->id);
+
+            $this->usageMetricRepository->create(
+                $subscription->user,
+                UsageMetricTypeEnum::UNSUBSCRIBE,
+                details: ['subscription_id' => $subscription->id]
+            );
         });
     }
 
@@ -116,6 +131,12 @@ class SubscriptionService implements SubscriptionServiceInterface
                 'price' => $price,
                 'tax' => $this->calculateTax($price),
             ]);
+
+            $this->usageMetricRepository->create(
+                $subscription->user,
+                UsageMetricTypeEnum::SUBSCRIBE,
+                details: ['subscription_id' => $subscription->id, 'plan_id' => $subscription->plan_id]
+            );
         });
     }
 

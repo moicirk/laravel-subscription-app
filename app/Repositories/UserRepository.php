@@ -2,4 +2,43 @@
 
 namespace App\Repositories;
 
-class UserRepository {}
+use App\Models\User;
+use Illuminate\Support\Facades\Hash;
+
+class UserRepository
+{
+    /**
+     * Creates a new user
+     */
+    public function create(string $name, string $email, string $password): User
+    {
+        return User::create([
+            'name' => $name,
+            'email' => $email,
+            'password' => Hash::make($password),
+        ]);
+    }
+
+    /**
+     * Find user by email
+     *
+     * @param string $email
+     * @return User|null
+     */
+    public function findByEmail(string $email): ?User
+    {
+        return User::where('email', $email)->first();
+    }
+
+    /**
+     * Check user by password
+     *
+     * @param User $user
+     * @param string $password
+     * @return bool
+     */
+    public function checkPassword(User $user, string $password): bool
+    {
+        return Hash::check($password, $user->password);
+    }
+}
