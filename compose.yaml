@@ -1,7 +1,7 @@
 services:
     laravel.test:
         build:
-            context: ./vendor/laravel/sail/runtimes/8.4
+            context: ./docker/8.4
             dockerfile: Dockerfile
             args:
                 WWWGROUP: '${WWWGROUP}'
@@ -17,6 +17,8 @@ services:
             XDEBUG_MODE: '${SAIL_XDEBUG_MODE:-off}'
             XDEBUG_CONFIG: '${SAIL_XDEBUG_CONFIG:-client_host=host.docker.internal}'
             IGNITION_LOCAL_SITES_PATH: '${PWD}'
+            NEW_RELIC_LICENSE_KEY: '${NEW_RELIC_LICENSE_KEY}'
+            NEW_RELIC_APP_NAME: '${NEW_RELIC_APP_NAME}'
         volumes:
             - '.:/var/www/html'
         networks:
@@ -24,6 +26,7 @@ services:
         depends_on:
             - pgsql
             - redis
+
     pgsql:
         image: 'postgres:18-alpine'
         ports:
@@ -35,7 +38,7 @@ services:
             POSTGRES_PASSWORD: '${DB_PASSWORD:-secret}'
         volumes:
             - 'sail-pgsql:/var/lib/postgresql/data'
-            - './vendor/laravel/sail/database/pgsql/create-testing-database.sql:/docker-entrypoint-initdb.d/10-create-testing-database.sql'
+            - './docker/pgsql/create-testing-database.sql:/docker-entrypoint-initdb.d/10-create-testing-database.sql'
         networks:
             - sail
         healthcheck:
@@ -49,6 +52,7 @@ services:
                 - '${DB_USERNAME}'
             retries: 3
             timeout: 5s
+
     redis:
         image: 'redis:alpine'
         ports:
@@ -64,6 +68,7 @@ services:
                 - ping
             retries: 3
             timeout: 5s
+
 networks:
     sail:
         driver: bridge
