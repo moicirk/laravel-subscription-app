@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>@yield('title', 'Subscription Plans')</title>
-    <script src="https://cdn.tailwindcss.com"></script>
+    @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
 <body class="bg-gray-50">
     <!-- Navigation -->
@@ -51,6 +51,8 @@
             </div>
         @endif
 
+        <div id="notifications"></div>
+
         @yield('content')
     </main>
 
@@ -62,5 +64,47 @@
             </p>
         </div>
     </footer>
+
+    @stack('scripts')
+    <script>
+        // Wait for Echo to be initialized
+        document.addEventListener('DOMContentLoaded', function() {
+            // Listen for user login events
+            window.Echo.channel('user-login')
+                .listen('.user.logged.in', (e) => {
+                    console.log('User logged in:', e);
+
+                    // Create notification element
+                    const notification = document.createElement('div');
+                    notification.className = 'bg-green-50 border border-green-200 text-green-800 px-4 py-3 rounded-lg animate-fade-in mb-1';
+                    notification.innerHTML = `
+                <div class="flex items-center">
+                    <svg class="w-5 h-5 text-green-600 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+                    </svg>
+                    <div>
+                        <p class="text-sm text-green-600">
+                            User ID: ${e.user.id}, Name: ${e.user.name}
+                        </p>
+                    </div>
+                </div>
+            `;
+
+                    // Add to notifications container
+                    const container = document.getElementById('notifications');
+                    container.insertBefore(notification, container.firstChild);
+
+                    // Remove after 5 seconds
+                    setTimeout(() => {
+                        notification.style.opacity = '0';
+                        notification.style.transition = 'opacity 0.5s ease-out';
+                        setTimeout(() => notification.remove(), 500);
+                    }, 5000);
+                });
+
+            console.log('WebSocket listener initialized for user-login channel');
+        });
+    </script>
+
 </body>
 </html>

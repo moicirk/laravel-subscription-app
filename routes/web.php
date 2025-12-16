@@ -23,9 +23,4 @@ Route::middleware('guest')->group(function () {
 // Subscription routes - require authentication
 Route::middleware('auth')->group(function () {
     Route::post('/logout', [AuthController::class, 'logout'])->middleware('auth')->name('logout');
-
-    Route::post('/subscriptions/subscribe', [SubscriptionController::class, 'subscribe'])->name('subscriptions.web.subscribe');
-    Route::put('/subscriptions/{id}/upgrade', [SubscriptionController::class, 'upgrade'])->name('subscriptions.web.upgrade');
-    Route::put('/subscriptions/{id}/downgrade', [SubscriptionController::class, 'downgrade'])->name('subscriptions.web.downgrade');
-    Route::delete('/subscriptions/{id}/cancel', [SubscriptionController::class, 'cancel'])->name('subscriptions.web.cancel');
 });

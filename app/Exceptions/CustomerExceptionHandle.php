@@ -51,7 +51,7 @@ class CustomerExceptionHandle
 
         $statusCode = $this->getStatusCode($exception);
 
-        return response()->view('errors.custom', ['exception' => $exception], $statusCode);
+        return response()->view('errors.index', ['exception' => $exception], $statusCode);
     }
 
     /**

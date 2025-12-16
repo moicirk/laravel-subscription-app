@@ -53,6 +53,28 @@ services:
             retries: 3
             timeout: 5s
 
+    reverb:
+      build:
+        context: ./docker/8.4
+        dockerfile: Dockerfile
+        args:
+          WWWGROUP: '${WWWGROUP}'
+      restart: unless-stopped
+      working_dir: /var/www/html
+      command: php artisan reverb:start --host=0.0.0.0 --port=8080 --debug
+      ports:
+        - "8080:8080"
+      environment:
+        WWWUSER: '${WWWUSER}'
+        LARAVEL_SAIL: 1
+      volumes:
+        - '.:/var/www/html'
+      networks:
+        - sail
+      depends_on:
+        - laravel.test
+        - redis
+
     redis:
         image: 'redis:alpine'
         ports:
@@ -69,12 +91,32 @@ services:
             retries: 3
             timeout: 5s
 
+    queue-worker:
+      build:
+        context: ./docker/8.4
+        dockerfile: Dockerfile
+        args:
+          WWWGROUP: '${WWWGROUP}'
+      restart: unless-stopped
+      working_dir: /var/www/html
+      command: php artisan queue:work redis --queue=default
+      environment:
+        WWWUSER: '${WWWUSER}'
+        LARAVEL_SAIL: 1
+        REVERB_HOST: "reverb"
+      volumes:
+        - '.:/var/www/html'
+      networks:
+        - sail
+      depends_on:
+        - laravel.test
+        - pgsql
+        - redis
+
 networks:
     sail:
         driver: bridge
 volumes:
-    sail-mysql:
-        driver: local
     sail-pgsql:
         driver: local
     sail-redis:
