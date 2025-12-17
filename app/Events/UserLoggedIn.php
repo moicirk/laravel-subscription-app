@@ -39,14 +39,4 @@ class UserLoggedIn implements ShouldBroadcast
     {
         return 'user.logged.in';
     }
-
-    /**
-     * Get the data to broadcast.
-     */
-    public function broadcastWith(): array
-    {
-        return [
-            'logged_in_at' => now()->toIso8601String(),
-        ];
-    }
 }
