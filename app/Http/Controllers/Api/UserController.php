@@ -12,7 +12,7 @@ final class UserController extends Controller
 {
     public function index(Request $request): JsonResponse
     {
-        Log::info("UserController index");
+        Log::info('UserController index');
 
         $user = $request->user();
         broadcast(new UserLoggedIn($user));

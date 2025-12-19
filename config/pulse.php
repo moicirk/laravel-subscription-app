@@ -234,10 +234,10 @@ return [
         ],
 
         \Laravel\Reverb\Pulse\Recorders\ReverbConnections::class => [
-            'sample_rate' => 1
+            'sample_rate' => 1,
         ],
         \Laravel\Reverb\Pulse\Recorders\ReverbMessages::class => [
-            'sample_rate' => 1
-        ]
+            'sample_rate' => 1,
+        ],
     ],
 ];
