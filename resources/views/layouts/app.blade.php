@@ -12,7 +12,10 @@
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex justify-between h-16">
                 <div class="flex items-center">
-                    <a href="/" class="text-xl font-bold text-gray-800">
+                    <a href="/" class="flex items-center text-xl font-bold text-gray-800">
+                        <span class="relative flex items-center mr-2">
+                            <span id="status-dot" class="w-3 h-3 rounded-full bg-gray-400"></span>
+                        </span>
                         Subscription App
                     </a>
                 </div>
@@ -69,6 +72,9 @@
     <script>
         // Wait for Echo to be initialized
         document.addEventListener('DOMContentLoaded', function() {
+            const statusDot = document.getElementById('status-dot');
+            const isAuthenticated = {{ auth()->check() ? 'true' : 'false' }};
+
             // Listen for user login events
             window.Echo.channel('user-login')
                 .listen('.user.logged.in', (e) => {
@@ -101,6 +107,34 @@
                         setTimeout(() => notification.remove(), 500);
                     }, 5000);
                 });
+
+            // Handle online/offline status
+            if (isAuthenticated) {
+                // Join presence channel for authenticated users
+                window.Echo.join('users.online')
+                    .here((users) => {
+                        console.log('Currently online users:', users);
+                        // Update status to online (green)
+                        statusDot.classList.remove('bg-gray-400');
+                        statusDot.classList.add('bg-green-500');
+                    })
+                    .joining((user) => {
+                        console.log('User joining:', user.name);
+                    })
+                    .leaving((user) => {
+                        console.log('User leaving:', user.name);
+                    })
+                    .error((error) => {
+                        console.error('Error joining presence channel:', error);
+                        // Keep dot gray on error
+                        statusDot.classList.remove('bg-green-500');
+                        statusDot.classList.add('bg-gray-400');
+                    });
+
+                console.log('Joined presence channel: users.online');
+            } else {
+                console.log('User not authenticated - status dot remains gray');
+            }
 
             console.log('WebSocket listener initialized for user-login channel');
         });
