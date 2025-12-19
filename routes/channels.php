@@ -15,5 +15,6 @@ Broadcast::channel('users.online', function ($user) {
             'email' => $user->email,
         ];
     }
+
     return false;
 });
