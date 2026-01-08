@@ -116,6 +116,27 @@ services:
         - pgsql
         - redis
 
+    horizon:
+      build:
+        context: ./docker/8.4
+        dockerfile: Dockerfile
+        args:
+          WWWGROUP: '${WWWGROUP}'
+      working_dir: /var/www/html
+      command: php artisan horizon
+      environment:
+        WWWUSER: '${WWWUSER}'
+        LARAVEL_SAIL: 1
+        REVERB_HOST: "reverb"
+      volumes:
+        - '.:/var/www/html'
+      networks:
+        - sail
+      depends_on:
+        - laravel.test
+        - pgsql
+        - redis
+
 networks:
     sail:
         driver: bridge
