@@ -2,7 +2,7 @@ name: Production CD
 
 on:
   push:
-    branches: [ main, feature-github-actions-creation ]
+    branches: [main]
 
 jobs:
   test:
@@ -11,24 +11,27 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.4'
+          extensions: mbstring, xml, ctype, iconv, intl, pgsql
+          coverage: none
+
       - name: Copy .env
-        run: cp .env.example .env
+        run: php -r "file_exists('.env') || copy('.env.example', '.env');"
 
       - name: Install Composer Dependencies
-        run: docker run --rm -v $(pwd):/app composer install --ignore-platform-reqs
+        run: composer install --no-interaction --prefer-dist --optimize-autoloader
 
-      - name: Start Sail
-        run: ./vendor/bin/sail up -d
+      - name: Generate Application Key
+        run: php artisan key:generate
 
-      - name: Wait for services
-        run: sleep 10
+      - name: Directory Permissions
+        run: chmod -R 777 storage bootstrap/cache
 
       - name: Run Laravel Pint
-        run: ./vendor/bin/sail pint --test
+        run: ./vendor/bin/pint --test
 
-      - name: Run Tests
-        run: ./vendor/bin/sail artisan test
-
-      - name: Stop Sail
-        if: always()
-        run: ./vendor/bin/sail down
+      - name: Execute Tests
+        run: php artisan test
