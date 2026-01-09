@@ -23,7 +23,7 @@ jobs:
         with:
           node-version: '20.x'
       - run: npm install
-      - run: npm run vite build
+      - run: npm run build
 
       - name: Copy .env
         run: php -r "file_exists('.env') || copy('.env.example', '.env');"
